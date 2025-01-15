@@ -16,6 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let streakCount = 0;
   let lastCompletionDate = null;
+  let currentTimer = null; // Variable to keep track of the currently running timer
+
+  function showError(message) {
+    errorMessageDiv.textContent = message;
+    errorMessageDiv.style.display = 'block';
+    setTimeout(() => {
+      errorMessageDiv.style.display = 'none';
+      taskInput.value = '';
+    }, 3000); // Adjust the time as needed
+  }
 
   // Load tasks from local storage
   loadTasksFromLocalStorage();
@@ -26,18 +36,24 @@ document.addEventListener('DOMContentLoaded', () => {
   addTaskBtn.addEventListener('click', () => {
     const taskText = taskInput.value.trim();
     if (taskText !== '') {
+      if (currentTimer !== null) {
+        showError('A timer is already running for another task.');
+        return;
+      }
       addTask(taskText);
       taskInput.value = '';
       showMotivationalQuote();
       saveTasksToLocalStorage();
     } else {
-      showErrorMessage('Please enter a task.');
+      showError('Please enter a task.');
     }
   });
 
   function addTask(taskText) {
     const li = createTaskElement(taskText);
     taskList.appendChild(li);
+    clearErrorMessage(); // Clear error message when a new task is added
+    setTimeout(clearErrorMessage, 5000); // Clear error message after 5 seconds
   }
 
   function createTaskElement(taskText) {
@@ -54,10 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerBtn = createButton('Start Timer', () => {
       const minutes = parseInt(timerInput.value);
       if (!isNaN(minutes) && minutes > 0) {
+        if (currentTimer !== null) {
+          showError('A timer is already running for another task.');
+          setTimeout(clearErrorMessage, 5000); // Clear error message after 5 seconds
+          return;
+        }
         startTimer(li, minutes, timerInput);
         clearErrorMessage();
       } else {
-        showErrorMessage('Please enter a valid number of minutes.');
+        showError('Please enter a valid number of minutes.');
       }
     });
 
@@ -89,14 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
     timerDisplay.textContent = formatTime(timeLeft);
     taskElement.appendChild(timerDisplay);
 
-    const timerInterval = setInterval(() => {
+    currentTimer = setInterval(() => {
       timeLeft--;
       timerDisplay.textContent = formatTime(timeLeft);
       if (timeLeft % 60 === 0) { // Show progress reminder every minute
         showMotivationalQuote();
       }
       if (timeLeft <= 0) {
-        clearInterval(timerInterval);
+        clearInterval(currentTimer);
+        currentTimer = null; // Reset the timer after completion
         showMessage('Time is up! Take a short break and then continue.');
         taskElement.removeChild(timerDisplay);
         timerInput.value = ''; // Clear the timer input value
