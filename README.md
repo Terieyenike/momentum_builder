@@ -2,6 +2,8 @@
 
 Momentum Builder is a web application designed to help users overcome procrastination and provide motivational nudges. The app encourages consistency by tracking streaks and displaying progress reminders.
 
+![momentum builder demo](image.png)
+
 ## Features
 
 - Add tasks
