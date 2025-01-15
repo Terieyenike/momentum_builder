@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header, footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.message, .error-message {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+.message {
+    background-color: #ffeb3b;
+    color: #333;
+    display: none;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    display: none;
+}
+
+.task-input {
+    display: flex;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+#task {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+#addTaskBtn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+#addTaskBtn:hover {
+    background-color: #218838;
+}
+
+#taskList {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+#taskList li {
+    background-color: #fff;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+
+#taskList li button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+#taskList li button:hover {
+    background-color: #c82333;
+}
+
+#taskList li input {
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+#taskList li span {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+/* Add styles for the streak count */
+#streakCount {
+    background-color: #d4edda;
+    color: #155724;
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .task-input, #taskList {
+        max-width: 100%;
+    }
+
+    #addTaskBtn {
+        margin-left: 5px;
+    }
+}
