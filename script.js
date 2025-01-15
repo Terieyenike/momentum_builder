@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load tasks from local storage
   loadTasksFromLocalStorage();
 
+  // Display a motivational quote immediately on page load
+  showMotivationalQuote();
+
   addTaskBtn.addEventListener('click', () => {
     const taskText = taskInput.value.trim();
     if (taskText !== '') {
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerBtn = createButton('Start Timer', () => {
       const minutes = parseInt(timerInput.value);
       if (!isNaN(minutes) && minutes > 0) {
-        startTimer(li, minutes);
+        startTimer(li, minutes, timerInput);
         clearErrorMessage();
       } else {
         showErrorMessage('Please enter a valid number of minutes.');
@@ -80,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return input;
   }
 
-  function startTimer(taskElement, minutes) {
+  function startTimer(taskElement, minutes, timerInput) {
     let timeLeft = minutes * 60; // Convert minutes to seconds
     const timerDisplay = document.createElement('span');
     timerDisplay.textContent = formatTime(timeLeft);
@@ -90,12 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
       timeLeft--;
       timerDisplay.textContent = formatTime(timeLeft);
       if (timeLeft % 60 === 0) { // Show progress reminder every minute
-        showProgressReminder();
+        showMotivationalQuote();
       }
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         showMessage('Time is up! Take a short break and then continue.');
         taskElement.removeChild(timerDisplay);
+        timerInput.value = ''; // Clear the timer input value
         incrementStreak();
       }
     }, 1000);
@@ -110,10 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function showMotivationalQuote() {
     const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
     showMessage(motivationalQuotes[randomIndex]);
-  }
-
-  function showProgressReminder() {
-    showMessage("Keep going! You're making progress!");
   }
 
   function showMessage(message) {
@@ -148,7 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function saveTasksToLocalStorage() {
     const tasks = [];
     taskList.querySelectorAll('li').forEach(taskElement => {
-      tasks.push(taskElement.textContent.replace('Delete', '').trim());
+      const taskText = taskElement.childNodes[0].textContent.trim();
+      tasks.push(taskText);
     });
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }
