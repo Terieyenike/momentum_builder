@@ -17,34 +17,38 @@ document.addEventListener('DOMContentLoaded', () => {
   let streakCount = 0;
   let lastCompletionDate = null;
 
+  // Load tasks from local storage
+  loadTasksFromLocalStorage();
+
   addTaskBtn.addEventListener('click', () => {
     const taskText = taskInput.value.trim();
     if (taskText !== '') {
       addTask(taskText);
       taskInput.value = '';
       showMotivationalQuote();
+      saveTasksToLocalStorage();
+    } else {
+      showErrorMessage('Please enter a task.');
     }
   });
 
   function addTask(taskText) {
+    const li = createTaskElement(taskText);
+    taskList.appendChild(li);
+  }
+
+  function createTaskElement(taskText) {
     const li = document.createElement('li');
     li.textContent = taskText;
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.addEventListener('click', () => {
+    const deleteBtn = createButton('Delete', () => {
       taskList.removeChild(li);
       clearErrorMessage();
+      saveTasksToLocalStorage();
     });
 
-    const timerInput = document.createElement('input');
-    timerInput.type = 'number';
-    timerInput.placeholder = 'Minutes';
-    timerInput.min = '1';
-
-    const timerBtn = document.createElement('button');
-    timerBtn.textContent = 'Start Timer';
-    timerBtn.addEventListener('click', () => {
+    const timerInput = createInput('number', 'Minutes', '1');
+    const timerBtn = createButton('Start Timer', () => {
       const minutes = parseInt(timerInput.value);
       if (!isNaN(minutes) && minutes > 0) {
         startTimer(li, minutes);
@@ -57,7 +61,23 @@ document.addEventListener('DOMContentLoaded', () => {
     li.appendChild(timerInput);
     li.appendChild(timerBtn);
     li.appendChild(deleteBtn);
-    taskList.appendChild(li);
+
+    return li;
+  }
+
+  function createButton(text, onClick) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  function createInput(type, placeholder, min) {
+    const input = document.createElement('input');
+    input.type = type;
+    input.placeholder = placeholder;
+    if (min) input.min = min;
+    return input;
   }
 
   function startTimer(taskElement, minutes) {
@@ -70,12 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
       timeLeft--;
       timerDisplay.textContent = formatTime(timeLeft);
       if (timeLeft % 60 === 0) { // Show progress reminder every minute
-        console.log("Progress reminder triggered");
         showProgressReminder();
       }
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
-        console.log("Timer ended");
         showMessage('Time is up! Take a short break and then continue.');
         taskElement.removeChild(timerDisplay);
         incrementStreak();
@@ -91,23 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showMotivationalQuote() {
     const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
-    console.log("Motivational quote displayed");
     showMessage(motivationalQuotes[randomIndex]);
   }
 
   function showProgressReminder() {
-    console.log("Progress reminder displayed");
     showMessage("Keep going! You're making progress!");
   }
 
   function showMessage(message) {
-    console.log("Message displayed:", message);
     quoteMessageDiv.textContent = message;
     quoteMessageDiv.style.display = 'block';
   }
 
   function showErrorMessage(message) {
-    console.log("Error message displayed:", message);
     errorMessageDiv.textContent = message;
     errorMessageDiv.style.display = 'block';
   }
@@ -129,5 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateStreakCount() {
     streakCountDiv.textContent = `Streak: ${streakCount} day(s)`;
     streakCountDiv.style.display = 'block';
+  }
+
+  function saveTasksToLocalStorage() {
+    const tasks = [];
+    taskList.querySelectorAll('li').forEach(taskElement => {
+      tasks.push(taskElement.textContent.replace('Delete', '').trim());
+    });
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function loadTasksFromLocalStorage() {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.forEach(taskText => addTask(taskText));
   }
 });
